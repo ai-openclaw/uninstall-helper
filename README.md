@@ -1,1 +1,1 @@
-# Uninstall Helper\n\nA smart uninstallation tool powered by AI for Windows, macOS, and Linux.\n\n## Features\n- Process detection and termination\n- Resource cleanup (files, registry)\n- Conversational interface for user interaction\n- Cross-platform support (Windows first)\n
+# Uninstall Helper\n\nA smart uninstallation tool powered by AI for Windows, macOS, and Linux.\n\n## Features\n- Process detection and termination\n- Resource cleanup (files, registry)\n- Conversational interface for user interaction\n- Cross-platform support (Windows first)
