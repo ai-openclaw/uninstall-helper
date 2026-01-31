@@ -9,10 +9,10 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 
 setup(
     name="uninstall-helper",
-    version="0.1.0",
+    version="0.2.0",
     author="AI OpenClaw",
     author_email="ai-openclaw@example.com",
-    description="AI-powered uninstallation tool for Windows, macOS, and Linux",
+    description="AI-powered uninstallation tool with GUI for Windows, macOS, and Linux",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/ai-openclaw/uninstall-helper",
