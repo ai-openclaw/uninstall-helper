@@ -31,6 +31,9 @@ class UninstallHelperGUI:
         # 运行状态
         self.is_running = False
         
+        # 权限状态
+        self.has_permissions = self.check_permissions()
+        
     def setup_styles(self):
         """设置界面样式"""
         style = ttk.Style()
@@ -42,6 +45,24 @@ class UninstallHelperGUI:
         self.text_bg = "#ffffff"
         
         self.root.configure(bg=self.bg_color)
+    
+    def check_permissions(self):
+        """检查是否有足够的权限"""
+        import platform
+        system = platform.system().lower()
+        
+        if system == "linux":
+            # 检查是否是root用户
+            return os.geteuid() == 0
+        elif system == "windows":
+            # Windows检查管理员权限
+            try:
+                import ctypes
+                return ctypes.windll.shell32.IsUserAnAdmin() != 0
+            except:
+                return True  # 如果检查失败，假设有权限
+        else:  # macOS
+            return os.geteuid() == 0
     
     def create_widgets(self):
         """创建所有界面组件"""
@@ -145,6 +166,17 @@ class UninstallHelperGUI:
         self.status_label = ttk.Label(main_frame, text="就绪", foreground="green")
         self.status_label.grid(row=5, column=0, columnspan=3, pady=(0, 10))
         
+        # 权限状态显示
+        permission_text = "✅ 有管理员权限" if self.has_permissions else "⚠️ 无管理员权限"
+        permission_color = "green" if self.has_permissions else "orange"
+        self.permission_label = ttk.Label(
+            main_frame, 
+            text=permission_text, 
+            foreground=permission_color,
+            font=("Arial", 9)
+        )
+        self.permission_label.grid(row=5, column=2, sticky=tk.E, pady=(0, 10))
+        
         # 结果显示区域
         ttk.Label(main_frame, text="检测结果:").grid(row=6, column=0, sticky=tk.W, pady=(10, 5))
         
@@ -208,6 +240,29 @@ class UninstallHelperGUI:
             return
         
         mode = self.mode_var.get()
+        
+        # 检查权限（安全模式除外）
+        if mode != "safe" and not self.has_permissions:
+            import platform
+            system = platform.system()
+            
+            warning_msg = f"⚠️ 权限警告\n\n"
+            warning_msg += f"卸载操作需要管理员权限。\n"
+            
+            if system == "Linux":
+                warning_msg += "\n请使用以下方式运行：\n"
+                warning_msg += "1. 在终端中运行: sudo python3 run_gui.py\n"
+                warning_msg += "2. 或使用安全模式仅进行检测\n"
+            elif system == "Windows":
+                warning_msg += "\n请以管理员身份运行此程序。\n"
+            else:  # macOS
+                warning_msg += "\n请使用: sudo python3 run_gui.py\n"
+            
+            warning_msg += "\n当前将继续执行，但可能会失败。"
+            
+            if not messagebox.askyesno("权限警告", warning_msg):
+                return
+        
         if mode == "safe":
             # 安全模式就是检测
             self.run_command(software, "safe")
