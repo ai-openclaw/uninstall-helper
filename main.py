@@ -41,6 +41,38 @@ class UninstallHelper:
         else:
             self.config = default_config
     
+    def check_permissions(self):
+        """
+        Check if we have sufficient permissions for uninstallation.
+        
+        Returns:
+            bool: True if we have sufficient permissions, False otherwise
+        """
+        if self.system == "linux":
+            # On Linux, check if we're root or can use sudo
+            if os.geteuid() == 0:
+                return True
+            else:
+                # Check if sudo is available
+                if shutil.which("sudo"):
+                    return False  # Need sudo but it's available
+                else:
+                    print("❌ 需要root权限但sudo不可用")
+                    return False
+        elif self.system == "windows":
+            # On Windows, check if we're running as administrator
+            try:
+                import ctypes
+                return ctypes.windll.shell32.IsUserAnAdmin() != 0
+            except:
+                return True  # Assume we have permissions if check fails
+        else:  # macOS
+            # On macOS, similar to Linux
+            if os.geteuid() == 0:
+                return True
+            else:
+                return shutil.which("sudo") is not None
+    
     def detect_processes(self, target_name):
         """
         Detect running processes related to the target software.
@@ -229,6 +261,29 @@ class UninstallHelper:
         """
         print(f"\n🔍 Starting uninstallation analysis for: {software_name}")
         print(f"📊 System detected: {platform.system()} {platform.release()}")
+        
+        # Check permissions before starting
+        if not self.check_permissions():
+            print("\n⚠️  权限警告:")
+            if self.system == "linux":
+                print("   此操作需要管理员权限 (root/sudo)")
+                print("   请使用以下方式运行:")
+                print("   1. sudo python3 main.py '软件名'")
+                print("   2. 或在sudo会话中运行")
+            elif self.system == "windows":
+                print("   此操作需要管理员权限")
+                print("   请以管理员身份运行命令提示符")
+            elif self.system == "darwin":
+                print("   此操作需要管理员权限 (sudo)")
+                print("   请使用: sudo python3 main.py '软件名'")
+            
+            if interactive:
+                response = input("\n继续吗？(可能失败) (y/n): ")
+                if response.lower() != 'y':
+                    return {
+                        "software": software_name,
+                        "error": "权限不足，用户取消"
+                    }
         
         results = {
             "software": software_name,
@@ -419,6 +474,16 @@ def main():
     
     args = parser.parse_args()
     helper = UninstallHelper()
+    
+    # Early permission check for better user experience
+    if args.software and not args.safe:
+        # Only check permissions if we're going to make changes
+        if not helper.check_permissions():
+            print("⚠️  权限警告: 此操作需要管理员权限")
+            if platform.system().lower() == "linux":
+                print("   请使用: sudo python3 main.py '软件名'")
+            print("   或使用 --safe 模式仅进行检测")
+            sys.exit(1)
     
     if args.interactive or (not args.software and not args.safe and not args.aggressive):
         helper.interactive_mode()
