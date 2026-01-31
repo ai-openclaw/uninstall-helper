@@ -45,6 +45,28 @@ pip install -e .
 - **macOS**: May require admin privileges for some operations
 - **Linux**: Uses native package managers (apt, yum, pacman, etc.)
 
+## 🔐 权限要求
+
+### 为什么需要管理员权限？
+卸载系统软件需要修改系统文件、注册表和程序目录，这些操作需要管理员权限：
+
+#### Linux/macOS
+```bash
+# 需要sudo权限执行apt/brew等命令
+sudo apt remove software-name
+
+# 正确使用方法
+sudo python3 main.py "software-name"
+```
+
+#### Windows
+- 需要以**管理员身份**运行命令提示符
+- 或右键点击程序选择"以管理员身份运行"
+
+#### 安全模式例外
+- **安全模式** (`--safe`) 仅检测，无需权限
+- 实际卸载操作需要相应权限
+
 ## 🚀 Usage
 
 ### Basic Usage
@@ -52,14 +74,15 @@ pip install -e .
 # Interactive mode (recommended for beginners)
 python main.py
 
-# Uninstall specific software
-python main.py "Google Chrome"
+# Uninstall specific software (需要管理员权限)
+sudo python main.py "Google Chrome"          # Linux/macOS
+# 或以管理员身份运行: python main.py "Google Chrome"  # Windows
 
-# Safe mode (detection only, no changes)
+# Safe mode (detection only, no changes - 无需权限)
 python main.py "Firefox" --safe
 
-# Aggressive mode (full cleanup without prompts)
-python main.py "Old Software" --aggressive
+# Aggressive mode (full cleanup without prompts - 需要权限)
+sudo python main.py "Old Software" --aggressive
 ```
 
 ### Command Line Options
