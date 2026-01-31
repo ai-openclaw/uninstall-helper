@@ -1,0 +1,57 @@
+{
+  "windows": {
+    "uninstall_registry": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
+    "program_files": [
+      "C:\\Program Files",
+      "C:\\Program Files (x86)"
+    ],
+    "common_directories": [
+      "%APPDATA%",
+      "%LOCALAPPDATA%",
+      "%PROGRAMDATA%"
+    ]
+  },
+  "macos": {
+    "applications_dir": "/Applications",
+    "library_dir": "~/Library",
+    "common_directories": [
+      "~/Applications",
+      "~/Library/Application Support",
+      "~/Library/Preferences",
+      "~/Library/Caches"
+    ]
+  },
+  "linux": {
+    "package_managers": [
+      "apt",
+      "apt-get",
+      "yum",
+      "dnf",
+      "pacman",
+      "snap",
+      "flatpak",
+      "zypper"
+    ],
+    "common_directories": [
+      "/usr/bin",
+      "/usr/local/bin",
+      "/opt",
+      "/snap",
+      "/var/lib/flatpak/app",
+      "~/.local/bin",
+      "~/.local/share/applications"
+    ]
+  },
+  "ai_features": {
+    "enable_smart_detection": true,
+    "enable_conversational_mode": true,
+    "enable_learning": true,
+    "suggest_alternatives": true
+  },
+  "safety": {
+    "confirm_before_delete": true,
+    "create_backup": false,
+    "log_all_actions": true,
+    "max_backup_age_days": 7
+  }
+}
